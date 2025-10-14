@@ -1,297 +1,391 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Halloween Costume Contest</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Halloween Costume Contest</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      background: linear-gradient(135deg, #ff6b00 0%, #ff8c00 50%, #ffa500 100%);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-      position: relative;
-      overflow-x: hidden;
-    }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #ff6b00 0%, #ff8c00 50%, #ffa500 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
 
-    .container {
-      background: rgba(255, 255, 255, 0.98);
-      border-radius: 24px;
-      padding: 48px;
-      max-width: 650px;
-      width: 100%;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      position: relative;
-      z-index: 1;
-      backdrop-filter: blur(10px);
-    }
+        /* Black spiderweb SVG pattern */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cg opacity='0.3'%3E%3Cline x1='100' y1='100' x2='100' y2='0' stroke='black' stroke-width='1'/%3E%3Cline x1='100' y1='100' x2='150' y2='25' stroke='black' stroke-width='1'/%3E%3Cline x1='100' y1='100' x2='175' y2='75' stroke='black' stroke-width='1'/%3E%3Cline x1='100' y1='100' x2='200' y2='100' stroke='black' stroke-width='1'/%3E%3Cline x1='100' y1='100' x2='175' y2='125' stroke='black' stroke-width='1'/%3E%3Cline x1='100' y1='100' x2='150' y2='175' stroke='black' stroke-width='1'/%3E%3Cline x1='100' y1='100' x2='100' y2='200' stroke='black' stroke-width='1'/%3E%3Cline x1='100' y1='100' x2='50' y2='175' stroke='black' stroke-width='1'/%3E%3Cline x1='100' y1='100' x2='25' y2='125' stroke='black' stroke-width='1'/%3E%3Cline x1='100' y1='100' x2='0' y2='100' stroke='black' stroke-width='1'/%3E%3Cline x1='100' y1='100' x2='25' y2='75' stroke='black' stroke-width='1'/%3E%3Cline x1='100' y1='100' x2='50' y2='25' stroke='black' stroke-width='1'/%3E%3Cellipse cx='100' cy='100' rx='30' ry='30' fill='none' stroke='black' stroke-width='1'/%3E%3Cellipse cx='100' cy='100' rx='60' ry='60' fill='none' stroke='black' stroke-width='1'/%3E%3Cellipse cx='100' cy='100' rx='90' ry='90' fill='none' stroke='black' stroke-width='1'/%3E%3C/g%3E%3C/svg%3E");
+            background-size: 400px 400px;
+            background-position: 0 0, 200px 200px;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.4;
+        }
 
-    h1 {
-      color: #1a1a1a;
-      text-align: center;
-      font-size: 2.5em;
-      margin-bottom: 8px;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-    }
+        /* Corner spiderwebs */
+        .spiderweb-corner {
+            position: fixed;
+            width: 250px;
+            height: 250px;
+            z-index: 0;
+            opacity: 0.25;
+        }
 
-    .subtitle {
-      color: #666;
-      text-align: center;
-      font-size: 1.1em;
-      margin-bottom: 40px;
-      font-weight: 400;
-    }
+        .spiderweb-tl {
+            top: 0;
+            left: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='250' height='250' xmlns='http://www.w3.org/2000/svg'%3E%3Cg%3E%3Cline x1='0' y1='0' x2='250' y2='0' stroke='black' stroke-width='2'/%3E%3Cline x1='0' y1='0' x2='0' y2='250' stroke='black' stroke-width='2'/%3E%3Cline x1='0' y1='0' x2='220' y2='30' stroke='black' stroke-width='1.5'/%3E%3Cline x1='0' y1='0' x2='190' y2='60' stroke='black' stroke-width='1.5'/%3E%3Cline x1='0' y1='0' x2='160' y2='90' stroke='black' stroke-width='1.5'/%3E%3Cline x1='0' y1='0' x2='130' y2='120' stroke='black' stroke-width='1.5'/%3E%3Cline x1='0' y1='0' x2='100' y2='150' stroke='black' stroke-width='1.5'/%3E%3Cline x1='0' y1='0' x2='70' y2='180' stroke='black' stroke-width='1.5'/%3E%3Cline x1='0' y1='0' x2='40' y2='210' stroke='black' stroke-width='1.5'/%3E%3Cpath d='M 50 0 Q 45 25 50 50 Q 25 45 0 50' fill='none' stroke='black' stroke-width='1.5'/%3E%3Cpath d='M 100 0 Q 90 50 100 100 Q 50 90 0 100' fill='none' stroke='black' stroke-width='1.5'/%3E%3Cpath d='M 150 0 Q 135 75 150 150 Q 75 135 0 150' fill='none' stroke='black' stroke-width='1.5'/%3E%3Cpath d='M 200 0 Q 180 100 200 200 Q 100 180 0 200' fill='none' stroke='black' stroke-width='1.5'/%3E%3C/g%3E%3C/svg%3E");
+        }
 
-    .form-group {
-      margin-bottom: 28px;
-    }
+        .spiderweb-tr {
+            top: 0;
+            right: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='250' height='250' xmlns='http://www.w3.org/2000/svg'%3E%3Cg%3E%3Cline x1='250' y1='0' x2='0' y2='0' stroke='black' stroke-width='2'/%3E%3Cline x1='250' y1='0' x2='250' y2='250' stroke='black' stroke-width='2'/%3E%3Cline x1='250' y1='0' x2='30' y2='30' stroke='black' stroke-width='1.5'/%3E%3Cline x1='250' y1='0' x2='60' y2='60' stroke='black' stroke-width='1.5'/%3E%3Cline x1='250' y1='0' x2='90' y2='90' stroke='black' stroke-width='1.5'/%3E%3Cline x1='250' y1='0' x2='120' y2='120' stroke='black' stroke-width='1.5'/%3E%3Cline x1='250' y1='0' x2='150' y2='150' stroke='black' stroke-width='1.5'/%3E%3Cline x1='250' y1='0' x2='180' y2='180' stroke='black' stroke-width='1.5'/%3E%3Cline x1='250' y1='0' x2='210' y2='210' stroke='black' stroke-width='1.5'/%3E%3Cpath d='M 200 0 Q 205 25 200 50 Q 225 45 250 50' fill='none' stroke='black' stroke-width='1.5'/%3E%3Cpath d='M 150 0 Q 160 50 150 100 Q 200 90 250 100' fill='none' stroke='black' stroke-width='1.5'/%3E%3Cpath d='M 100 0 Q 115 75 100 150 Q 175 135 250 150' fill='none' stroke='black' stroke-width='1.5'/%3E%3Cpath d='M 50 0 Q 70 100 50 200 Q 150 180 250 200' fill='none' stroke='black' stroke-width='1.5'/%3E%3C/g%3E%3C/svg%3E");
+        }
 
-    label {
-      display: block;
-      color: #1a1a1a;
-      font-size: 0.95em;
-      margin-bottom: 8px;
-      font-weight: 600;
-      letter-spacing: 0.3px;
-    }
+        .spiderweb-bl {
+            bottom: 0;
+            left: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='250' height='250' xmlns='http://www.w3.org/2000/svg'%3E%3Cg%3E%3Cline x1='0' y1='250' x2='250' y2='250' stroke='black' stroke-width='2'/%3E%3Cline x1='0' y1='250' x2='0' y2='0' stroke='black' stroke-width='2'/%3E%3Cline x1='0' y1='250' x2='220' y2='220' stroke='black' stroke-width='1.5'/%3E%3Cline x1='0' y1='250' x2='190' y2='190' stroke='black' stroke-width='1.5'/%3E%3Cline x1='0' y1='250' x2='160' y2='160' stroke='black' stroke-width='1.5'/%3E%3Cline x1='0' y1='250' x2='130' y2='130' stroke='black' stroke-width='1.5'/%3E%3Cline x1='0' y1='250' x2='100' y2='100' stroke='black' stroke-width='1.5'/%3E%3Cline x1='0' y1='250' x2='70' y2='70' stroke='black' stroke-width='1.5'/%3E%3Cline x1='0' y1='250' x2='40' y2='40' stroke='black' stroke-width='1.5'/%3E%3Cpath d='M 50 250 Q 45 225 50 200 Q 25 205 0 200' fill='none' stroke='black' stroke-width='1.5'/%3E%3Cpath d='M 100 250 Q 90 200 100 150 Q 50 160 0 150' fill='none' stroke='black' stroke-width='1.5'/%3E%3Cpath d='M 150 250 Q 135 175 150 100 Q 75 115 0 100' fill='none' stroke='black' stroke-width='1.5'/%3E%3Cpath d='M 200 250 Q 180 150 200 50 Q 100 70 0 50' fill='none' stroke='black' stroke-width='1.5'/%3E%3C/g%3E%3C/svg%3E");
+        }
 
-    input[type="text"],
-    textarea {
-      width: 100%;
-      padding: 14px 16px;
-      border: 2px solid #e0e0e0;
-      border-radius: 12px;
-      background: #fafafa;
-      font-size: 1em;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      transition: all 0.3s ease;
-      color: #1a1a1a;
-    }
+        .spiderweb-br {
+            bottom: 0;
+            right: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='250' height='250' xmlns='http://www.w3.org/2000/svg'%3E%3Cg%3E%3Cline x1='250' y1='250' x2='0' y2='250' stroke='black' stroke-width='2'/%3E%3Cline x1='250' y1='250' x2='250' y2='0' stroke='black' stroke-width='2'/%3E%3Cline x1='250' y1='250' x2='30' y2='220' stroke='black' stroke-width='1.5'/%3E%3Cline x1='250' y1='250' x2='60' y2='190' stroke='black' stroke-width='1.5'/%3E%3Cline x1='250' y1='250' x2='90' y2='160' stroke='black' stroke-width='1.5'/%3E%3Cline x1='250' y1='250' x2='120' y2='130' stroke='black' stroke-width='1.5'/%3E%3Cline x1='250' y1='250' x2='150' y2='100' stroke='black' stroke-width='1.5'/%3E%3Cline x1='250' y1='250' x2='180' y2='70' stroke='black' stroke-width='1.5'/%3E%3Cline x1='250' y1='250' x2='210' y2='40' stroke='black' stroke-width='1.5'/%3E%3Cpath d='M 200 250 Q 205 225 200 200 Q 225 205 250 200' fill='none' stroke='black' stroke-width='1.5'/%3E%3Cpath d='M 150 250 Q 160 200 150 150 Q 200 160 250 150' fill='none' stroke='black' stroke-width='1.5'/%3E%3Cpath d='M 100 250 Q 115 175 100 100 Q 175 115 250 100' fill='none' stroke='black' stroke-width='1.5'/%3E%3Cpath d='M 50 250 Q 70 150 50 50 Q 150 70 250 50' fill='none' stroke='black' stroke-width='1.5'/%3E%3C/g%3E%3C/svg%3E");
+        }
 
-    input[type="text"]:focus,
-    textarea:focus {
-      outline: none;
-      border-color: #ff6b00;
-      background: #ffffff;
-      box-shadow: 0 0 0 4px rgba(255, 107, 0, 0.1);
-    }
+        .container {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 24px;
+            padding: 48px;
+            max-width: 650px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(10px);
+        }
 
-    input[type="text"]::placeholder,
-    textarea::placeholder {
-      color: #999;
-    }
+        h1 {
+            color: #1a1a1a;
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 8px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
 
-    textarea {
-      resize: vertical;
-      min-height: 120px;
-      line-height: 1.6;
-    }
+        .subtitle {
+            color: #666;
+            text-align: center;
+            font-size: 1.1em;
+            margin-bottom: 40px;
+            font-weight: 400;
+        }
 
-    .radio-group {
-      display: flex;
-      gap: 24px;
-      margin-top: 12px;
-    }
+        .form-group {
+            margin-bottom: 28px;
+        }
 
-    .radio-option {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 12px 20px;
-      border: 2px solid #e0e0e0;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      background: #fafafa;
-    }
+        label {
+            display: block;
+            color: #1a1a1a;
+            font-size: 0.95em;
+            margin-bottom: 8px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
 
-    .radio-option:hover {
-      border-color: #ff6b00;
-      background: #fff5f0;
-    }
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            background: #fafafa;
+            font-size: 1em;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            transition: all 0.3s ease;
+            color: #1a1a1a;
+        }
 
-    .radio-option:has(input:checked) {
-      border-color: #ff6b00;
-      background: #fff5f0;
-    }
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #ff6b00;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(255, 107, 0, 0.1);
+        }
 
-    input[type="radio"] {
-      width: 20px;
-      height: 20px;
-      cursor: pointer;
-      accent-color: #ff6b00;
-    }
+        input[type="text"]::placeholder,
+        textarea::placeholder {
+            color: #999;
+        }
 
-    .radio-option label {
-      margin: 0;
-      cursor: pointer;
-      font-size: 0.95em;
-      font-weight: 500;
-    }
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+            line-height: 1.6;
+        }
 
-    .hidden {
-      display: none;
-    }
+        .radio-group {
+            display: flex;
+            gap: 24px;
+            margin-top: 12px;
+        }
 
-    button {
-      width: 100%;
-      padding: 16px;
-      background: linear-gradient(135deg, #ff6b00 0%, #ff8c00 100%);
-      border: none;
-      border-radius: 12px;
-      color: #ffffff;
-      font-size: 1.1em;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      box-shadow: 0 4px 12px rgba(255, 107, 0, 0.3);
-      margin-top: 12px;
-    }
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
 
-    button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(255, 107, 0, 0.4);
-    }
+        .radio-option:hover {
+            border-color: #ff6b00;
+            background: #fff5f0;
+        }
 
-    button:active {
-      transform: translateY(0);
-    }
+        .radio-option:has(input:checked) {
+            border-color: #ff6b00;
+            background: #fff5f0;
+        }
 
-    @media (max-width: 600px) {
-      .container {
-        padding: 32px 24px;
-      }
+        input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #ff6b00;
+        }
 
-      h1 {
-        font-size: 2em;
-      }
+        .radio-option label {
+            margin: 0;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 500;
+        }
 
-      .radio-group {
-        flex-direction: column;
-        gap: 12px;
-      }
-    }
-  </style>
+        .hidden {
+            display: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #ff6b00 0%, #ff8c00 100%);
+            border: none;
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 12px rgba(255, 107, 0, 0.3);
+            margin-top: 12px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 107, 0, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .success-message {
+            background: #4caf50;
+            color: white;
+            padding: 16px;
+            border-radius: 12px;
+            margin-top: 24px;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 32px 24px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .radio-group {
+                flex-direction: column;
+                gap: 12px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Costume Contest</h1>
-    <p class="subtitle">Enter your costume details below</p>
+    <div class="spiderweb-corner spiderweb-tl"></div>
+    <div class="spiderweb-corner spiderweb-tr"></div>
+    <div class="spiderweb-corner spiderweb-bl"></div>
+    <div class="spiderweb-corner spiderweb-br"></div>
 
-    <form id="costumeForm">
-      <div class="form-group">
-        <label>Costume Type:</label>
-        <div class="radio-group">
-          <div class="radio-option">
-            <input type="radio" id="individual" name="costumeType" value="individual" checked>
-            <label for="individual">Individual</label>
-          </div>
-          <div class="radio-option">
-            <input type="radio" id="couples" name="costumeType" value="couples">
-            <label for="couples">Couples</label>
-          </div>
+    <div class="container">
+        <h1>Costume Contest</h1>
+        <p class="subtitle">Enter your costume details below</p>
+
+        <form id="costumeForm">
+            <div class="form-group">
+                <label>Costume Type:</label>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="individual" name="costumeType" value="individual" checked>
+                        <label for="individual">Individual</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="couples" name="costumeType" value="couples">
+                        <label for="couples">Couples</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" id="individualFields">
+                <label for="name">Your Name:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+
+            <div class="form-group hidden" id="couplesFields">
+                <label for="name1">Person 1 Name:</label>
+                <input type="text" id="name1" name="name1">
+                
+                <label for="name2" style="margin-top: 15px;">Person 2 Name:</label>
+                <input type="text" id="name2" name="name2">
+            </div>
+
+            <div class="form-group">
+                <label for="costume">Costume Name:</label>
+                <input type="text" id="costume" name="costume" placeholder="e.g., Vampire, Ghostbusters, etc." required>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Costume Description:</label>
+                <textarea id="description" name="description" placeholder="Tell us about your costume..." required></textarea>
+            </div>
+
+            <button type="submit">Submit Entry</button>
+        </form>
+
+        <div class="success-message" id="successMessage">
+            Your entry has been submitted successfully!
         </div>
-      </div>
+    </div>
 
-      <div class="form-group" id="individualFields">
-        <label for="name">Your Name:</label>
-        <input type="text" id="name" name="name" required>
-      </div>
+    <script>
+        // Toggle between individual and couples fields
+        const radioButtons = document.querySelectorAll('input[name="costumeType"]');
+        const individualFields = document.getElementById('individualFields');
+        const couplesFields = document.getElementById('couplesFields');
+        const nameField = document.getElementById('name');
+        const name1Field = document.getElementById('name1');
+        const name2Field = document.getElementById('name2');
 
-      <div class="form-group hidden" id="couplesFields">
-        <label for="name1">Person 1 Name:</label>
-        <input type="text" id="name1" name="name1">
-        
-        <label for="name2" style="margin-top: 15px;">Person 2 Name:</label>
-        <input type="text" id="name2" name="name2">
-      </div>
-
-      <div class="form-group">
-        <label for="costume">Costume Name:</label>
-        <input type="text" id="costume" name="costume" placeholder="e.g., Vampire, Ghostbusters, etc." required>
-      </div>
-
-      <div class="form-group">
-        <label for="description">Costume Description:</label>
-        <textarea id="description" name="description" placeholder="Tell us about your costume..." required></textarea>
-      </div>
-
-      <button type="submit">Submit Entry</button>
-    </form>
-  </div>
-
-  <script>
-    const radioButtons = document.querySelectorAll('input[name="costumeType"]');
-    const individualFields = document.getElementById('individualFields');
-    const couplesFields = document.getElementById('couplesFields');
-    const nameField = document.getElementById('name');
-    const name1Field = document.getElementById('name1');
-    const name2Field = document.getElementById('name2');
-
-    radioButtons.forEach(radio => {
-      radio.addEventListener('change', function () {
-        if (this.value === 'individual') {
-          individualFields.classList.remove('hidden');
-          couplesFields.classList.add('hidden');
-          nameField.required = true;
-          name1Field.required = false;
-          name2Field.required = false;
-          name1Field.value = '';
-          name2Field.value = '';
-        } else {
-          individualFields.classList.add('hidden');
-          couplesFields.classList.remove('hidden');
-          nameField.required = false;
-          name1Field.required = true;
-          name2Field.required = true;
-          nameField.value = '';
-        }
-      });
-    });
-
-    document.getElementById('costumeForm').addEventListener('submit', async function (e) {
-      e.preventDefault();
-
-      const costumeType = document.querySelector('input[name="costumeType"]:checked').value;
-      const formData = {
-        timestamp: new Date().toISOString(),
-        costumeType: costumeType,
-        name1: costumeType === 'individual' ? document.getElementById('name').value : document.getElementById('name1').value,
-        name2: costumeType === 'couples' ? document.getElementById('name2').value : '',
-        costume: document.getElementById('costume').value,
-        description: document.getElementById('description').value
-      };
-
-      const scriptURL = 'https://script.google.com/macros/s/AKfycbyYX150VZOBm-Ic4X9t45creTHXDwTYBPW7qAztnyOBUUF9ZS50dxkxgeCgXWCBs9Ur/exec';
-
-      try {
-        await fetch(scriptURL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(formData)
+        radioButtons.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === 'individual') {
+                    individualFields.classList.remove('hidden');
+                    couplesFields.classList.add('hidden');
+                    nameField.required = true;
+                    name1Field.required = false;
+                    name2Field.required = false;
+                    // Clear couples fields
+                    name1Field.value = '';
+                    name2Field.value = '';
+                } else {
+                    individualFields.classList.add('hidden');
+                    couplesFields.classList.remove('hidden');
+                    nameField.required = false;
+                    name1Field.required = true;
+                    name2Field.required = true;
+                    // Clear individual field
+                    nameField.value = '';
+                }
+            });
         });
 
-        window.location.href = 'thank-you.html';
-      } catch (error) {
-        console.error('Error:', error);
-        alert('There was an error submitting your entry. Please try again.');
-      }
-    });
-  </script>
+        // Form submission
+        document.getElementById('costumeForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = {
+                costumeType: document.querySelector('input[name="costumeType"]:checked').value,
+                name: document.getElementById('name').value,
+                name1: document.getElementById('name1').value,
+                name2: document.getElementById('name2').value,
+                costume: document.getElementById('costume').value,
+                description: document.getElementById('description').value,
+                timestamp: new Date().toISOString()
+            };
+
+            // Google Apps Script Web App URL
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbyYX150VZOBm-Ic4X9t45creTHXDwTYBPW7qAztnyOBUUF9ZS50dxkxgeCgXWCBs9Ur/exec';
+
+            try {
+                const response = await fetch(scriptURL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                // Show success message
+                document.getElementById('successMessage').style.display = 'block';
+                document.getElementById('costumeForm').reset();
+
+                // Hide success message after 3 seconds
+                setTimeout(() => {
+                    document.getElementById('successMessage').style.display = 'none';
+                }, 3000);
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('There was an error submitting your entry. Please try again.');
+            }
+        });
+    </script>
 </body>
 </html>
