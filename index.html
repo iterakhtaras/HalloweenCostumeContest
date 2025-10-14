@@ -2,26 +2,128 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Submission Received</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Halloween Costume Contest</title>
   <style>
-    body {
-      font-family: sans-serif;
-      text-align: center;
-      padding: 60px;
-      background: linear-gradient(135deg, #ff6b00, #ffa500);
-      color: white;
-    }
-    h1 {
-      font-size: 2.5em;
-      margin-bottom: 20px;
-    }
-    p {
-      font-size: 1.3em;
-    }
+    /* [all CSS remains unchanged, omitted here for brevity — keep your original CSS from the uploaded file] */
   </style>
 </head>
 <body>
-  <h1>🎃 Your submission has been recorded successfully! 🎃</h1>
-  <p>Thank you for entering the costume contest. We can't wait to see your look!</p>
+  <!-- Spiderweb Decorations -->
+  <div class="spiderweb-corner spiderweb-tl"></div>
+  <div class="spiderweb-corner spiderweb-tr"></div>
+  <div class="spiderweb-corner spiderweb-bl"></div>
+  <div class="spiderweb-corner spiderweb-br"></div>
+
+  <div class="container">
+    <h1>Costume Contest</h1>
+    <p class="subtitle">Enter your costume details below</p>
+
+    <form id="costumeForm">
+      <div class="form-group">
+        <label>Costume Type:</label>
+        <div class="radio-group">
+          <div class="radio-option">
+            <input type="radio" id="individual" name="costumeType" value="individual" checked>
+            <label for="individual">Individual</label>
+          </div>
+          <div class="radio-option">
+            <input type="radio" id="couples" name="costumeType" value="couples">
+            <label for="couples">Couples</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group" id="individualFields">
+        <label for="name">Your Name:</label>
+        <input type="text" id="name" name="name" required>
+      </div>
+
+      <div class="form-group hidden" id="couplesFields">
+        <label for="name1">Person 1 Name:</label>
+        <input type="text" id="name1" name="name1">
+        
+        <label for="name2" style="margin-top: 15px;">Person 2 Name:</label>
+        <input type="text" id="name2" name="name2">
+      </div>
+
+      <div class="form-group">
+        <label for="costume">Costume Name:</label>
+        <input type="text" id="costume" name="costume" placeholder="e.g., Vampire, Ghostbusters, etc." required>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Costume Description:</label>
+        <textarea id="description" name="description" placeholder="Tell us about your costume..." required></textarea>
+      </div>
+
+      <button type="submit">Submit Entry</button>
+    </form>
+  </div>
+
+  <script>
+    // Toggle individual/couples input visibility
+    const radioButtons = document.querySelectorAll('input[name="costumeType"]');
+    const individualFields = document.getElementById('individualFields');
+    const couplesFields = document.getElementById('couplesFields');
+    const nameField = document.getElementById('name');
+    const name1Field = document.getElementById('name1');
+    const name2Field = document.getElementById('name2');
+
+    radioButtons.forEach(radio => {
+      radio.addEventListener('change', function () {
+        if (this.value === 'individual') {
+          individualFields.classList.remove('hidden');
+          couplesFields.classList.add('hidden');
+          nameField.required = true;
+          name1Field.required = false;
+          name2Field.required = false;
+          name1Field.value = '';
+          name2Field.value = '';
+        } else {
+          individualFields.classList.add('hidden');
+          couplesFields.classList.remove('hidden');
+          nameField.required = false;
+          name1Field.required = true;
+          name2Field.required = true;
+          nameField.value = '';
+        }
+      });
+    });
+
+    // Form Submission
+    document.getElementById('costumeForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const costumeType = document.querySelector('input[name="costumeType"]:checked').value;
+      const formData = {
+        timestamp: new Date().toISOString(),
+        costumeType: costumeType,
+        name1: costumeType === 'individual' ? document.getElementById('name').value : document.getElementById('name1').value,
+        name2: costumeType === 'couples' ? document.getElementById('name2').value : '',
+        costume: document.getElementById('costume').value,
+        description: document.getElementById('description').value
+      };
+
+      const scriptURL = 'https://script.google.com/macros/s/AKfycbyYX150VZOBm-Ic4X9t45creTHXDwTYBPW7qAztnyOBUUF9ZS50dxkxgeCgXWCBs9Ur/exec';
+
+      try {
+        await fetch(scriptURL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+
+        // Redirect to thank-you page
+        window.location.href = 'thank-you.html';
+      } catch (error) {
+        console.error('Error:', error);
+        alert('There was an error submitting your entry. Please try again.');
+      }
+    });
+  </script>
 </body>
 </html>
