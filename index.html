@@ -330,12 +330,17 @@
                     nameField.required = true;
                     name1Field.required = false;
                     name2Field.required = false;
+                    // Clear couples fields
+                    name1Field.value = '';
+                    name2Field.value = '';
                 } else {
                     individualFields.classList.add('hidden');
                     couplesFields.classList.remove('hidden');
                     nameField.required = false;
                     name1Field.required = true;
                     name2Field.required = true;
+                    // Clear individual field
+                    nameField.value = '';
                 }
             });
         });
