@@ -5,16 +5,187 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Halloween Costume Contest</title>
   <style>
-    /* [all CSS remains unchanged, omitted here for brevity — keep your original CSS from the uploaded file] */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #ff6b00 0%, #ff8c00 50%, #ffa500 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.98);
+      border-radius: 24px;
+      padding: 48px;
+      max-width: 650px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      position: relative;
+      z-index: 1;
+      backdrop-filter: blur(10px);
+    }
+
+    h1 {
+      color: #1a1a1a;
+      text-align: center;
+      font-size: 2.5em;
+      margin-bottom: 8px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+      color: #666;
+      text-align: center;
+      font-size: 1.1em;
+      margin-bottom: 40px;
+      font-weight: 400;
+    }
+
+    .form-group {
+      margin-bottom: 28px;
+    }
+
+    label {
+      display: block;
+      color: #1a1a1a;
+      font-size: 0.95em;
+      margin-bottom: 8px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      background: #fafafa;
+      font-size: 1em;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      transition: all 0.3s ease;
+      color: #1a1a1a;
+    }
+
+    input[type="text"]:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #ff6b00;
+      background: #ffffff;
+      box-shadow: 0 0 0 4px rgba(255, 107, 0, 0.1);
+    }
+
+    input[type="text"]::placeholder,
+    textarea::placeholder {
+      color: #999;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 120px;
+      line-height: 1.6;
+    }
+
+    .radio-group {
+      display: flex;
+      gap: 24px;
+      margin-top: 12px;
+    }
+
+    .radio-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 20px;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: #fafafa;
+    }
+
+    .radio-option:hover {
+      border-color: #ff6b00;
+      background: #fff5f0;
+    }
+
+    .radio-option:has(input:checked) {
+      border-color: #ff6b00;
+      background: #fff5f0;
+    }
+
+    input[type="radio"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: #ff6b00;
+    }
+
+    .radio-option label {
+      margin: 0;
+      cursor: pointer;
+      font-size: 0.95em;
+      font-weight: 500;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #ff6b00 0%, #ff8c00 100%);
+      border: none;
+      border-radius: 12px;
+      color: #ffffff;
+      font-size: 1.1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      box-shadow: 0 4px 12px rgba(255, 107, 0, 0.3);
+      margin-top: 12px;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(255, 107, 0, 0.4);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 32px 24px;
+      }
+
+      h1 {
+        font-size: 2em;
+      }
+
+      .radio-group {
+        flex-direction: column;
+        gap: 12px;
+      }
+    }
   </style>
 </head>
 <body>
-  <!-- Spiderweb Decorations -->
-  <div class="spiderweb-corner spiderweb-tl"></div>
-  <div class="spiderweb-corner spiderweb-tr"></div>
-  <div class="spiderweb-corner spiderweb-bl"></div>
-  <div class="spiderweb-corner spiderweb-br"></div>
-
   <div class="container">
     <h1>Costume Contest</h1>
     <p class="subtitle">Enter your costume details below</p>
@@ -62,7 +233,6 @@
   </div>
 
   <script>
-    // Toggle individual/couples input visibility
     const radioButtons = document.querySelectorAll('input[name="costumeType"]');
     const individualFields = document.getElementById('individualFields');
     const couplesFields = document.getElementById('couplesFields');
@@ -91,7 +261,6 @@
       });
     });
 
-    // Form Submission
     document.getElementById('costumeForm').addEventListener('submit', async function (e) {
       e.preventDefault();
 
@@ -117,7 +286,6 @@
           body: JSON.stringify(formData)
         });
 
-        // Redirect to thank-you page
         window.location.href = 'thank-you.html';
       } catch (error) {
         console.error('Error:', error);
