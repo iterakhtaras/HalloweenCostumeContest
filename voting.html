@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
   <title>Halloween Costume Contest - Vote Now!</title>
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
@@ -55,11 +58,31 @@
     .success-message{background:rgba(255,255,255,.98);color:#4caf50;padding:60px 40px;border-radius:20px;text-align:center;font-size:1.5em;font-weight:600;display:none;box-shadow:0 20px 60px rgba(0,0,0,.3)}
     .success-message.visible{display:block}
     .success-message h2{color:#4caf50;margin-bottom:20px;font-size:2em}
-    @media (max-width:768px){
-      .costume-grid{grid-template-columns:1fr}
-      h1{font-size:2em}
-      .vote-counter{flex-direction:column;gap:10px}
+
+    /* --- Mobile polish (iOS/Safari friendly) --- */
+    html, body { -webkit-text-size-adjust: 100%; }
+    .container { max-width: 760px; margin: 0 auto; }
+    body{
+      padding-top: max(12px, env(safe-area-inset-top));
+      padding-right: max(12px, env(safe-area-inset-right));
+      padding-bottom: max(16px, env(safe-area-inset-bottom));
+      padding-left: max(12px, env(safe-area-inset-left));
+      min-height: 100svh;
     }
+    @media (max-width: 768px) {
+      .header, .section-header, .costume-card {
+        width:100%; padding:20px; border-radius:16px;
+        box-shadow:0 10px 24px rgba(0,0,0,0.18);
+      }
+      .voting-instructions { padding:16px; font-size:0.95em; }
+      .section-header h2 { font-size:1.7em; line-height:1.2; }
+      .costume-grid { grid-template-columns:1fr; gap:16px; }
+      .costume-name { font-size:clamp(20px,5vw,26px); line-height:1.2; word-break:break-word; }
+      .participant-names, .costume-description { font-size:0.98em; line-height:1.45; word-break:break-word; }
+      .vote-counter { gap:12px; }
+      .submit-votes-btn { width:100%; position:sticky; bottom:12px; z-index:5; }
+    }
+    button { touch-action: manipulation; }
   </style>
 </head>
 <body>
@@ -105,7 +128,6 @@
     const ADMIN_PASSWORD = 'halloween2024';
 
     // ====== STATE ======
-    let costumes = [];
     let shuffledIndividuals = [];
     let shuffledCouples = [];
     let selectedIndividuals = [];
@@ -292,9 +314,6 @@
           shuffledIndividuals = shuffle(individuals.slice());
           shuffledCouples = shuffle(couples.slice());
 
-          // keep a combined list just for reference if needed
-          costumes = [...shuffledIndividuals, ...shuffledCouples];
-
           displayCostumes();
         } else {
           container.innerHTML = '<div class="no-entries">No costume entries yet. Check back soon!</div>';
@@ -307,6 +326,30 @@
       }
     }
 
+    function sectionHTML(title, items, type){
+      let html = `<div class="section-header"><h2>${title}</h2><p>Select 3 favorites</p></div><div class="costume-grid">`;
+      items.forEach((costume, i) => {
+        const costumeId   = `${type}-${i}`;
+        const isSelected  = (type === 'individual'
+                              ? selectedIndividuals
+                              : selectedCouples).some(v => v.id === costumeId);
+        const costumeName = String(costume.costumeName || '').replace(/'/g,"\\'");
+        const names       = String(costume.names || '');
+        const description = String(costume.description || '');
+
+        html += `
+          <div class="costume-card ${isSelected ? 'selected':''}" onclick="toggleVote('${costumeId}','${costumeName}','${type}')">
+            ${isSelected ? '<div class="selected-badge">✓ Selected</div>' : ''}
+            <div class="costume-type-badge">${type === 'individual' ? 'Individual' : 'Couples'}</div>
+            <div class="costume-name">${costume.costumeName || ''}</div>
+            <div class="participant-names">${names}</div>
+            <div class="costume-description">${description}</div>
+          </div>`;
+      });
+      html += '</div>';
+      return html;
+    }
+
     function displayCostumes(){
       const container = document.getElementById('costumeContainer');
 
@@ -316,49 +359,12 @@
       }
 
       let html = '';
-
       if (shuffledIndividuals.length){
-        html += '<div class="section-header"><h2>Individual Costumes</h2><p>Select 3 favorites</p></div><div class="costume-grid">';
-        shuffledIndividuals.forEach((costume, i) => {
-          const costumeId   = `individual-${i}`;
-          const isSelected  = selectedIndividuals.some(v => v.id === costumeId);
-          const costumeName = String(costume.costumeName || '').replace(/'/g,"\\'");
-          const names       = String(costume.names || '');
-          const description = String(costume.description || '');
-
-          html += `
-            <div class="costume-card ${isSelected ? 'selected':''}" onclick="toggleVote('${costumeId}','${costumeName}','individual')">
-              ${isSelected ? '<div class="selected-badge">✓ Selected</div>' : ''}
-              <div class="costume-type-badge">Individual</div>
-              <div class="costume-name">${costume.costumeName || ''}</div>
-              <div class="participant-names">${names}</div>
-              <div class="costume-description">${description}</div>
-            </div>`;
-        });
-        html += '</div>';
+        html += sectionHTML('Individual Costumes', shuffledIndividuals, 'individual');
       }
-
       if (shuffledCouples.length){
-        html += '<div class="section-header"><h2>Couples Costumes</h2><p>Select 3 favorites</p></div><div class="costume-grid">';
-        shuffledCouples.forEach((costume, i) => {
-          const costumeId   = `couples-${i}`;
-          const isSelected  = selectedCouples.some(v => v.id === costumeId);
-          const costumeName = String(costume.costumeName || '').replace(/'/g,"\\'");
-          const names       = String(costume.names || '');
-          const description = String(costume.description || '');
-
-          html += `
-            <div class="costume-card ${isSelected ? 'selected':''}" onclick="toggleVote('${costumeId}','${costumeName}','couples')">
-              ${isSelected ? '<div class="selected-badge">✓ Selected</div>' : ''}
-              <div class="costume-type-badge">Couples</div>
-              <div class="costume-name">${costume.costumeName || ''}</div>
-              <div class="participant-names">${names}</div>
-              <div class="costume-description">${description}</div>
-            </div>`;
-        });
-        html += '</div>';
+        html += sectionHTML('Couples Costumes', shuffledCouples, 'couples');
       }
-
       container.innerHTML = html;
     }
 
