@@ -359,7 +359,7 @@
     <script>
         // REPLACE WITH YOUR GOOGLE APPS SCRIPT URLS
         const SHEET_URL = 'https://script.google.com/macros/s/AKfycbyYX150VZOBm-Ic4X9t45creTHXDwTYBPW7qAztnyOBUUF9ZS50dxkxgeCgXWCBs9Ur/exec';
-        const VOTES_URL = 'https://script.google.com/macros/s/AKfycby8Pyswboti7GxKhh7XzqVaI0YX1nf9g-IK1jnU4Zk4zk3HlSmKgyl9v6ZUmUl1m2kV/exec';
+        const VOTES_URL = 'YOUR_VOTES_GOOGLE_SCRIPT_URL_HERE';
         const ADMIN_PASSWORD = 'halloween2024';
         
         let costumes = [];
@@ -557,14 +557,17 @@
                 individualCostumes.forEach((costume, index) => {
                     const costumeId = `individual-${index}`;
                     const isSelected = selectedIndividuals.some(v => v.id === costumeId);
+                    const costumeName = String(costume.costumeName || '').replace(/'/g, "\\'");
+                    const names = String(costume.names || '');
+                    const description = String(costume.description || '');
                     
                     html += `
-                        <div class="costume-card ${isSelected ? 'selected' : ''}" onclick="toggleVote('${costumeId}', '${costume.costumeName.replace(/'/g, "\\'")}', 'individual')">
+                        <div class="costume-card ${isSelected ? 'selected' : ''}" onclick="toggleVote('${costumeId}', '${costumeName}', 'individual')">
                             ${isSelected ? '<div class="selected-badge">✓ Selected</div>' : ''}
                             <div class="costume-type-badge">Individual</div>
                             <div class="costume-name">${costume.costumeName}</div>
-                            <div class="participant-names">${costume.names}</div>
-                            <div class="costume-description">${costume.description}</div>
+                            <div class="participant-names">${names}</div>
+                            <div class="costume-description">${description}</div>
                         </div>
                     `;
                 });
@@ -579,14 +582,17 @@
                 couplesCostumes.forEach((costume, index) => {
                     const costumeId = `couples-${index}`;
                     const isSelected = selectedCouples.some(v => v.id === costumeId);
+                    const costumeName = String(costume.costumeName || '').replace(/'/g, "\\'");
+                    const names = String(costume.names || '');
+                    const description = String(costume.description || '');
                     
                     html += `
-                        <div class="costume-card ${isSelected ? 'selected' : ''}" onclick="toggleVote('${costumeId}', '${costume.costumeName.replace(/'/g, "\\'")}', 'couples')">
+                        <div class="costume-card ${isSelected ? 'selected' : ''}" onclick="toggleVote('${costumeId}', '${costumeName}', 'couples')">
                             ${isSelected ? '<div class="selected-badge">✓ Selected</div>' : ''}
                             <div class="costume-type-badge">Couples</div>
                             <div class="costume-name">${costume.costumeName}</div>
-                            <div class="participant-names">${costume.names}</div>
-                            <div class="costume-description">${costume.description}</div>
+                            <div class="participant-names">${names}</div>
+                            <div class="costume-description">${description}</div>
                         </div>
                     `;
                 });
