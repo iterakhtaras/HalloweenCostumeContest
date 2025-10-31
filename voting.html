@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Halloween Costume Contest - Vote Now!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #ff6b00 0%, #ff8c00 50%, #ffa500 100%);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cg opacity='0.3'%3E%3Cline x1='100' y1='100' x2='100' y2='0' stroke='black' stroke-width='1'/%3E%3Cline x1='100' y1='100' x2='150' y2='25' stroke='black' stroke-width='1'/%3E%3Cline x1='100' y1='100' x2='175' y2='75' stroke='black' stroke-width='1'/%3E%3Cline x1='100' y1='100' x2='200' y2='100' stroke='black' stroke-width='1'/%3E%3Cline x1='100' y1='100' x2='175' y2='125' stroke='black' stroke-width='1'/%3E%3Cline x1='100' y1='100' x2='150' y2='175' stroke='black' stroke-width='1'/%3E%3Cline x1='100' y1='100' x2='100' y2='200' stroke='black' stroke-width='1'/%3E%3Cline x1='100' y1='100' x2='50' y2='175' stroke='black' stroke-width='1'/%3E%3Cline x1='100' y1='100' x2='25' y2='125' stroke='black' stroke-width='1'/%3E%3Cline x1='100' y1='100' x2='0' y2='100' stroke='black' stroke-width='1'/%3E%3Cline x1='100' y1='100' x2='25' y2='75' stroke='black' stroke-width='1'/%3E%3Cline x1='100' y1='100' x2='50' y2='25' stroke='black' stroke-width='1'/%3E%3Cellipse cx='100' cy='100' rx='30' ry='30' fill='none' stroke='black' stroke-width='1'/%3E%3Cellipse cx='100' cy='100' rx='60' ry='60' fill='none' stroke='black' stroke-width='1'/%3E%3Cellipse cx='100' cy='100' rx='90' ry='90' fill='none' stroke='black' stroke-width='1'/%3E%3C/g%3E%3C/svg%3E");
+            background-size: 400px 400px;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.4;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 24px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .admin-controls {
+            display: none;
+            background: #fff3e0;
+            border: 2px solid #ff6b00;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .admin-controls.visible {
+            display: block;
+        }
+
+        .admin-label {
+            background: #ff6b00;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-right: 10px;
+        }
+
+        h1 {
+            color: #1a1a1a;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+
+        .refresh-btn {
+            background: linear-gradient(135deg, #ff6b00 0%, #ff8c00 100%);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            padding: 12px 24px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 107, 0, 0.4);
+        }
+
+        .refresh-info {
+            color: #999;
+            font-size: 0.9em;
+            margin-top: 15px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 1.2em;
+        }
+
+        .costume-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .costume-card {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .costume-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .costume-type-badge {
+            display: inline-block;
+            background: #ff6b00;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .costume-name {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+        }
+
+        .participant-names {
+            color: #666;
+            font-size: 1em;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .costume-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+        }
+
+        .vote-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 20px;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .vote-btn {
+            background: linear-gradient(135deg, #ff6b00 0%, #ff8c00 100%);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            padding: 12px 28px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .vote-btn:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(255, 107, 0, 0.4);
+        }
+
+        .vote-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .vote-count {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #ff6b00;
+        }
+
+        .voted-indicator {
+            background: #4caf50;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .no-entries {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            padding: 60px;
+            text-align: center;
+            color: #666;
+            font-size: 1.2em;
+        }
+
+        @media (max-width: 768px) {
+            .costume-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Costume Contest Voting</h1>
+            <p class="subtitle">Vote for your favorite costume!</p>
+            
+            <div id="adminControls" class="admin-controls">
+                <span class="admin-label">ADMIN MODE</span>
+                <button class="refresh-btn" onclick="loadCostumes()">Refresh Entries</button>
+                <p class="refresh-info">Manual refresh available in admin mode</p>
+            </div>
+            
+            <p class="refresh-info">Last updated: <span id="lastUpdate">Loading...</span></p>
+        </div>
+
+        <div id="costumeContainer" class="loading">
+            Loading costume entries...
+        </div>
+    </div>
+
+    <script>
+        // REPLACE WITH YOUR GOOGLE APPS SCRIPT WEB APP URL
+        const SHEET_URL = 'https://script.google.com/macros/s/AKfycbyYX150VZOBm-Ic4X9t45creTHXDwTYBPW7qAztnyOBUUF9ZS50dxkxgeCgXWCBs9Ur/exec';
+        
+        // ADMIN PASSWORD - Change this to your secret password
+        const ADMIN_PASSWORD = 'halloween2024';
+        
+        let costumes = [];
+        let userVotes = {};
+        let isAdmin = false;
+
+        // Check if admin mode is enabled
+        function checkAdminMode() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const adminParam = urlParams.get('admin');
+            
+            if (adminParam === ADMIN_PASSWORD) {
+                isAdmin = true;
+                document.getElementById('adminControls').classList.add('visible');
+                console.log('Admin mode enabled');
+            }
+        }
+
+        // Load votes from storage
+        async function loadVotes() {
+            try {
+                const result = await window.storage.get('user-votes');
+                if (result) {
+                    userVotes = JSON.parse(result.value);
+                }
+            } catch (error) {
+                console.log('No previous votes found');
+                userVotes = {};
+            }
+        }
+
+        // Save votes to storage
+        async function saveVotes() {
+            try {
+                await window.storage.set('user-votes', JSON.stringify(userVotes));
+            } catch (error) {
+                console.error('Error saving votes:', error);
+            }
+        }
+
+        // Load vote counts from shared storage
+        async function loadVoteCounts() {
+            const voteCounts = {};
+            try {
+                const keys = await window.storage.list('vote-', true);
+                if (keys && keys.keys) {
+                    for (const key of keys.keys) {
+                        try {
+                            const result = await window.storage.get(key, true);
+                            if (result) {
+                                const costumeId = key.replace('vote-', '');
+                                voteCounts[costumeId] = parseInt(result.value) || 0;
+                            }
+                        } catch (e) {
+                            // Key doesn't exist yet
+                            continue;
+                        }
+                    }
+                }
+            } catch (error) {
+                console.log('Error loading vote counts:', error);
+            }
+            return voteCounts;
+        }
+
+        // Vote for a costume
+        async function vote(costumeId) {
+            if (userVotes[costumeId]) {
+                alert('You have already voted for this costume!');
+                return;
+            }
+
+            try {
+                // Get current vote count
+                let currentVotes = 0;
+                try {
+                    const result = await window.storage.get('vote-' + costumeId, true);
+                    if (result) {
+                        currentVotes = parseInt(result.value) || 0;
+                    }
+                } catch (e) {
+                    // Key doesn't exist, start at 0
+                }
+
+                // Increment vote count
+                await window.storage.set('vote-' + costumeId, String(currentVotes + 1), true);
+
+                // Mark as voted by this user
+                userVotes[costumeId] = true;
+                await saveVotes();
+
+                // Refresh display
+                await displayCostumes();
+            } catch (error) {
+                console.error('Error voting:', error);
+                alert('Error submitting vote. Please try again.');
+            }
+        }
+
+        // Load costumes from Google Sheet
+        async function loadCostumes() {
+            const container = document.getElementById('costumeContainer');
+            container.innerHTML = '<div class="loading">Loading costume entries...</div>';
+
+            try {
+                const response = await fetch(SHEET_URL);
+                const data = await response.json();
+                
+                if (data.entries && data.entries.length > 0) {
+                    costumes = data.entries;
+                    await displayCostumes();
+                } else {
+                    container.innerHTML = '<div class="no-entries">No costume entries yet. Check back soon!</div>';
+                }
+
+                // Update last refresh time
+                document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+            } catch (error) {
+                console.error('Error loading costumes:', error);
+                container.innerHTML = '<div class="no-entries">Error loading entries. Please check your connection and try again.</div>';
+            }
+        }
+
+        // Display costumes
+        async function displayCostumes() {
+            const container = document.getElementById('costumeContainer');
+            const voteCounts = await loadVoteCounts();
+
+            if (costumes.length === 0) {
+                container.innerHTML = '<div class="no-entries">No costume entries yet. Check back soon!</div>';
+                return;
+            }
+
+            let html = '<div class="costume-grid">';
+            
+            costumes.forEach((costume, index) => {
+                const costumeId = `costume-${index}`;
+                const votes = voteCounts[costumeId] || 0;
+                const hasVoted = userVotes[costumeId];
+
+                html += `
+                    <div class="costume-card">
+                        <div class="costume-type-badge">${costume.type === 'couples' ? 'Couples' : 'Individual'}</div>
+                        <div class="costume-name">${costume.costumeName}</div>
+                        <div class="participant-names">${costume.names}</div>
+                        <div class="costume-description">${costume.description}</div>
+                        <div class="vote-section">
+                            ${hasVoted 
+                                ? '<div class="voted-indicator">✓ Voted</div>' 
+                                : `<button class="vote-btn" onclick="vote('${costumeId}')">Vote</button>`
+                            }
+                            <div class="vote-count">${votes} ${votes === 1 ? 'vote' : 'votes'}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        // Initialize
+        async function init() {
+            checkAdminMode();
+            await loadVotes();
+            await loadCostumes();
+            
+            // Auto-refresh every hour (3600000 ms)
+            setInterval(loadCostumes, 3600000);
+        }
+
+        // Start when page loads
+        init();
+    </script>
+</body>
+</html>
