@@ -86,9 +86,7 @@
       <p class="refresh-info">Last updated: <span id="lastUpdate">Loading...</span></p>
     </div>
 
-    <div id="costumeContainer" class="loading">
-      Loading costume entries...
-    </div>
+    <div id="costumeContainer" class="loading">Loading costume entries...</div>
 
     <div style="text-align:center;margin:40px 0;">
       <button class="submit-votes-btn" id="submitBtn" onclick="submitVotes()">Submit My Votes</button>
@@ -102,9 +100,7 @@
 
   <script>
     // ====== CONFIG ======
-    // Entries sheet (read)
     const SHEET_URL = 'https://script.google.com/macros/s/AKfycbyYX150VZOBm-Ic4X9t45creTHXDwTYBPW7qAztnyOBUUF9ZS50dxkxgeCgXWCBs9Ur/exec';
-    // Votes web app (write) — your latest deployment:
     const VOTES_URL = 'https://script.google.com/macros/s/AKfycbynGJOwtVssSTGKa4mnEVTII2-uRowlfGgK29SRa_PIxIQIzG-vrsm-Ea9Vwpw7F5iR/exec';
     const ADMIN_PASSWORD = 'halloween2024';
 
@@ -203,8 +199,8 @@
       updateCounters();
     }
 
-    // ====== SUBMIT (form-encoded; no preflight) ======
-    async function submitVotes(){
+    // ====== SUBMIT via JSONP (no CORS issues) ======
+    function submitVotes(){
       if (selectedIndividuals.length !== 3 || selectedCouples.length !== 3){
         alert('Please select exactly 3 individual costumes and 3 couples costumes!');
         return;
@@ -225,23 +221,11 @@
         vote_3_couple: selectedCouples[2].name
       };
 
-      try{
-        const form = new URLSearchParams();
-        form.append('payload', JSON.stringify(voteData));
-
-        const response = await fetch(VOTES_URL, { method:'POST', body: form });
-        const text = await response.text();
-
-        let result;
-        try{ result = JSON.parse(text); }
-        catch{
-          console.error('Non-JSON response from Apps Script:', response.status, text);
-          alert(`Error submitting votes (${response.status}). See console for details.`);
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'Submit My Votes';
-          return;
-        }
-
+      // Create a unique callback name
+      const cbName = '__voteCb_' + Date.now() + '_' + Math.random().toString(36).slice(2,8);
+      window[cbName] = function(result){
+        clearTimeout(timeout);
+        cleanup();
         if (result && result.result === 'success'){
           localStorage.setItem('hasVotedHalloween2024','true');
           hasVoted = true;
@@ -251,12 +235,38 @@
           submitBtn.disabled = false;
           submitBtn.textContent = 'Submit My Votes';
         }
-      } catch(err){
-        console.error('Fetch error while submitting votes:', err);
+      };
+
+      const qs = new URLSearchParams({
+        callback: cbName,
+        payload: JSON.stringify(voteData)
+      });
+
+      const script = document.createElement('script');
+      script.src = VOTES_URL + '?' + qs.toString();
+      script.onerror = function(){
+        clearTimeout(timeout);
+        cleanup();
+        console.error('JSONP network error');
         alert('Network error submitting votes. Please try again.');
         submitBtn.disabled = false;
         submitBtn.textContent = 'Submit My Votes';
+      };
+
+      function cleanup(){
+        delete window[cbName];
+        if (script && script.parentNode){ script.parentNode.removeChild(script); }
       }
+
+      document.body.appendChild(script);
+
+      // Timeout safeguard
+      const timeout = setTimeout(function(){
+        cleanup();
+        alert('Timeout submitting votes. Please try again.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit My Votes';
+      }, 12000);
     }
 
     // ====== LOAD ENTRIES ======
