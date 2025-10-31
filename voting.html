@@ -281,18 +281,25 @@
         }
 
         .success-message {
-            background: #4caf50;
-            color: white;
-            padding: 40px;
+            background: rgba(255, 255, 255, 0.98);
+            color: #4caf50;
+            padding: 60px 40px;
             border-radius: 20px;
             text-align: center;
             font-size: 1.5em;
             font-weight: 600;
             display: none;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
 
         .success-message.visible {
             display: block;
+        }
+
+        .success-message h2 {
+            color: #4caf50;
+            margin-bottom: 20px;
+            font-size: 2em;
         }
 
         @media (max-width: 768px) {
@@ -317,7 +324,7 @@
             <h1>Costume Contest Voting</h1>
             <p class="subtitle">Select your favorites!</p>
             
-            <div class="voting-instructions">
+            <div class="voting-instructions" id="instructions">
                 <h3>How to Vote:</h3>
                 <p>Click on <strong>3 individual costumes</strong> and <strong>3 couples costumes</strong> to select them. Once you've made all your selections, click "Submit Votes" at the bottom.</p>
                 <div class="vote-counter">
@@ -344,12 +351,15 @@
         </div>
 
         <div class="success-message" id="successMessage">
-            <p>Thank you for voting! Your votes have been recorded.</p>
+            <h2>✓ Thank You!</h2>
+            <p>Your votes have been recorded successfully!</p>
         </div>
     </div>
 
     <script>
+        // REPLACE WITH YOUR GOOGLE APPS SCRIPT URLS
         const SHEET_URL = 'https://script.google.com/macros/s/AKfycbyYX150VZOBm-Ic4X9t45creTHXDwTYBPW7qAztnyOBUUF9ZS50dxkxgeCgXWCBs9Ur/exec';
+        const VOTES_URL = 'https://script.google.com/macros/s/AKfycbxz_g8-OZo8ktKZIZJYFVzAQ-PnrTWUlo0r2Qa-mXsNyZAlGkSuICf-km1cHdyTQbpq/exec';
         const ADMIN_PASSWORD = 'halloween2024';
         
         let costumes = [];
@@ -357,16 +367,32 @@
         let selectedCouples = [];
         let hasVoted = false;
         let isAdmin = false;
+        let voterId = null;
+
+        // Generate or retrieve voter ID
+        function getVoterId() {
+            let id = localStorage.getItem('halloweenVoterId');
+            if (!id) {
+                id = 'voter_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('halloweenVoterId', id);
+            }
+            return id;
+        }
 
         // Check if user has already voted
         function checkIfVoted() {
             const voted = localStorage.getItem('hasVotedHalloween2024');
             if (voted === 'true') {
                 hasVoted = true;
-                document.getElementById('successMessage').classList.add('visible');
-                document.getElementById('costumeContainer').style.display = 'none';
-                document.querySelector('.voting-instructions').style.display = 'none';
+                showSuccessMessage();
             }
+        }
+
+        function showSuccessMessage() {
+            document.getElementById('successMessage').classList.add('visible');
+            document.getElementById('costumeContainer').style.display = 'none';
+            document.getElementById('instructions').style.display = 'none';
+            document.getElementById('submitBtn').style.display = 'none';
         }
 
         function checkAdminMode() {
@@ -406,14 +432,14 @@
             }
         }
 
-        function toggleVote(costumeId, type) {
+        function toggleVote(costumeId, costumeName, type) {
             if (hasVoted && !isAdmin) {
                 alert('You have already submitted your votes!');
                 return;
             }
 
             if (type === 'individual') {
-                const index = selectedIndividuals.indexOf(costumeId);
+                const index = selectedIndividuals.findIndex(v => v.id === costumeId);
                 if (index > -1) {
                     selectedIndividuals.splice(index, 1);
                 } else {
@@ -421,10 +447,10 @@
                         alert('You can only select 3 individual costumes!');
                         return;
                     }
-                    selectedIndividuals.push(costumeId);
+                    selectedIndividuals.push({ id: costumeId, name: costumeName });
                 }
             } else {
-                const index = selectedCouples.indexOf(costumeId);
+                const index = selectedCouples.findIndex(v => v.id === costumeId);
                 if (index > -1) {
                     selectedCouples.splice(index, 1);
                 } else {
@@ -432,7 +458,7 @@
                         alert('You can only select 3 couples costumes!');
                         return;
                     }
-                    selectedCouples.push(costumeId);
+                    selectedCouples.push({ id: costumeId, name: costumeName });
                 }
             }
             
@@ -450,20 +476,43 @@
             submitBtn.disabled = true;
             submitBtn.textContent = 'Submitting...';
 
-            // Record votes in localStorage to prevent multiple votes
-            localStorage.setItem('hasVotedHalloween2024', 'true');
-            localStorage.setItem('votedIndividuals', JSON.stringify(selectedIndividuals));
-            localStorage.setItem('votedCouples', JSON.stringify(selectedCouples));
+            const voteData = {
+                vote_id: voterId,
+                timestamp: new Date().toISOString(),
+                vote_1_ind: selectedIndividuals[0].name,
+                vote_2_ind: selectedIndividuals[1].name,
+                vote_3_ind: selectedIndividuals[2].name,
+                vote_1_couple: selectedCouples[0].name,
+                vote_2_couple: selectedCouples[1].name,
+                vote_3_couple: selectedCouples[2].name
+            };
 
-            // Here you could send votes to a server if needed
-            // For now, just show success message
+            try {
+                const response = await fetch(VOTES_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(voteData)
+                });
 
-            document.getElementById('successMessage').classList.add('visible');
-            document.getElementById('costumeContainer').style.display = 'none';
-            document.querySelector('.voting-instructions').style.display = 'none';
-            submitBtn.style.display = 'none';
-
-            hasVoted = true;
+                const result = await response.json();
+                
+                if (result.result === 'success') {
+                    localStorage.setItem('hasVotedHalloween2024', 'true');
+                    hasVoted = true;
+                    showSuccessMessage();
+                } else {
+                    alert(result.message || 'Error submitting votes. Please try again.');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Submit My Votes';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error submitting votes. Please try again.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit My Votes';
+            }
         }
 
         async function loadCostumes() {
@@ -507,10 +556,10 @@
                 
                 individualCostumes.forEach((costume, index) => {
                     const costumeId = `individual-${index}`;
-                    const isSelected = selectedIndividuals.includes(costumeId);
+                    const isSelected = selectedIndividuals.some(v => v.id === costumeId);
                     
                     html += `
-                        <div class="costume-card ${isSelected ? 'selected' : ''}" onclick="toggleVote('${costumeId}', 'individual')">
+                        <div class="costume-card ${isSelected ? 'selected' : ''}" onclick="toggleVote('${costumeId}', '${costume.costumeName.replace(/'/g, "\\'")}', 'individual')">
                             ${isSelected ? '<div class="selected-badge">✓ Selected</div>' : ''}
                             <div class="costume-type-badge">Individual</div>
                             <div class="costume-name">${costume.costumeName}</div>
@@ -529,10 +578,10 @@
                 
                 couplesCostumes.forEach((costume, index) => {
                     const costumeId = `couples-${index}`;
-                    const isSelected = selectedCouples.includes(costumeId);
+                    const isSelected = selectedCouples.some(v => v.id === costumeId);
                     
                     html += `
-                        <div class="costume-card ${isSelected ? 'selected' : ''}" onclick="toggleVote('${costumeId}', 'couples')">
+                        <div class="costume-card ${isSelected ? 'selected' : ''}" onclick="toggleVote('${costumeId}', '${costume.costumeName.replace(/'/g, "\\'")}', 'couples')">
                             ${isSelected ? '<div class="selected-badge">✓ Selected</div>' : ''}
                             <div class="costume-type-badge">Couples</div>
                             <div class="costume-name">${costume.costumeName}</div>
@@ -549,6 +598,7 @@
         }
 
         async function init() {
+            voterId = getVoterId();
             checkAdminMode();
             checkIfVoted();
             if (!hasVoted) {
