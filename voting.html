@@ -85,6 +85,42 @@
             margin-bottom: 20px;
         }
 
+        .voting-instructions {
+            background: #fff3e0;
+            border: 2px solid #ff6b00;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .voting-instructions h3 {
+            color: #ff6b00;
+            margin-bottom: 10px;
+        }
+
+        .voting-instructions p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .vote-counter {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 15px;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        .counter-item {
+            color: #666;
+        }
+
+        .counter-item.complete {
+            color: #4caf50;
+        }
+
         .refresh-btn {
             background: linear-gradient(135deg, #ff6b00 0%, #ff8c00 100%);
             border: none;
@@ -103,6 +139,35 @@
             box-shadow: 0 8px 20px rgba(255, 107, 0, 0.4);
         }
 
+        .submit-votes-btn {
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            padding: 16px 40px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .submit-votes-btn.visible {
+            display: inline-block;
+        }
+
+        .submit-votes-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .submit-votes-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         .refresh-info {
             color: #999;
             font-size: 0.9em;
@@ -114,6 +179,25 @@
             padding: 40px;
             color: #666;
             font-size: 1.2em;
+        }
+
+        .section-header {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            padding: 20px;
+            margin: 30px 0 20px 0;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .section-header h2 {
+            color: #1a1a1a;
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        .section-header p {
+            color: #666;
         }
 
         .costume-grid {
@@ -130,11 +214,17 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             transition: all 0.3s;
             position: relative;
+            cursor: pointer;
         }
 
         .costume-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .costume-card.selected {
+            border: 3px solid #4caf50;
+            box-shadow: 0 15px 40px rgba(76, 175, 80, 0.4);
         }
 
         .costume-type-badge {
@@ -146,6 +236,18 @@
             font-size: 0.85em;
             font-weight: 600;
             margin-bottom: 15px;
+        }
+
+        .selected-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #4caf50;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9em;
         }
 
         .costume-name {
@@ -169,51 +271,6 @@
             font-size: 0.95em;
         }
 
-        .vote-section {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding-top: 20px;
-            border-top: 2px solid #f0f0f0;
-        }
-
-        .vote-btn {
-            background: linear-gradient(135deg, #ff6b00 0%, #ff8c00 100%);
-            border: none;
-            border-radius: 12px;
-            color: white;
-            padding: 12px 28px;
-            font-size: 1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .vote-btn:hover:not(:disabled) {
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(255, 107, 0, 0.4);
-        }
-
-        .vote-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-
-        .vote-count {
-            font-size: 1.2em;
-            font-weight: 700;
-            color: #ff6b00;
-        }
-
-        .voted-indicator {
-            background: #4caf50;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.9em;
-        }
-
         .no-entries {
             background: rgba(255, 255, 255, 0.98);
             border-radius: 20px;
@@ -221,6 +278,21 @@
             text-align: center;
             color: #666;
             font-size: 1.2em;
+        }
+
+        .success-message {
+            background: #4caf50;
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: 600;
+            display: none;
+        }
+
+        .success-message.visible {
+            display: block;
         }
 
         @media (max-width: 768px) {
@@ -231,6 +303,11 @@
             h1 {
                 font-size: 2em;
             }
+
+            .vote-counter {
+                flex-direction: column;
+                gap: 10px;
+            }
         }
     </style>
 </head>
@@ -238,7 +315,16 @@
     <div class="container">
         <div class="header">
             <h1>Costume Contest Voting</h1>
-            <p class="subtitle">Vote for your favorite costume!</p>
+            <p class="subtitle">Select your favorites!</p>
+            
+            <div class="voting-instructions">
+                <h3>How to Vote:</h3>
+                <p>Click on <strong>3 individual costumes</strong> and <strong>3 couples costumes</strong> to select them. Once you've made all your selections, click "Submit Votes" at the bottom.</p>
+                <div class="vote-counter">
+                    <div class="counter-item" id="individualCounter">Individuals: <span id="individualCount">0</span>/3</div>
+                    <div class="counter-item" id="couplesCounter">Couples: <span id="couplesCount">0</span>/3</div>
+                </div>
+            </div>
             
             <div id="adminControls" class="admin-controls">
                 <span class="admin-label">ADMIN MODE</span>
@@ -252,20 +338,37 @@
         <div id="costumeContainer" class="loading">
             Loading costume entries...
         </div>
+
+        <div style="text-align: center; margin: 40px 0;">
+            <button class="submit-votes-btn" id="submitBtn" onclick="submitVotes()">Submit My Votes</button>
+        </div>
+
+        <div class="success-message" id="successMessage">
+            <p>Thank you for voting! Your votes have been recorded.</p>
+        </div>
     </div>
 
     <script>
-        // REPLACE WITH YOUR GOOGLE APPS SCRIPT WEB APP URL
         const SHEET_URL = 'https://script.google.com/macros/s/AKfycbyYX150VZOBm-Ic4X9t45creTHXDwTYBPW7qAztnyOBUUF9ZS50dxkxgeCgXWCBs9Ur/exec';
-        
-        // ADMIN PASSWORD - Change this to your secret password
         const ADMIN_PASSWORD = 'halloween2024';
         
         let costumes = [];
-        let userVotes = {};
+        let selectedIndividuals = [];
+        let selectedCouples = [];
+        let hasVoted = false;
         let isAdmin = false;
 
-        // Check if admin mode is enabled
+        // Check if user has already voted
+        function checkIfVoted() {
+            const voted = localStorage.getItem('hasVotedHalloween2024');
+            if (voted === 'true') {
+                hasVoted = true;
+                document.getElementById('successMessage').classList.add('visible');
+                document.getElementById('costumeContainer').style.display = 'none';
+                document.querySelector('.voting-instructions').style.display = 'none';
+            }
+        }
+
         function checkAdminMode() {
             const urlParams = new URLSearchParams(window.location.search);
             const adminParam = urlParams.get('admin');
@@ -273,92 +376,96 @@
             if (adminParam === ADMIN_PASSWORD) {
                 isAdmin = true;
                 document.getElementById('adminControls').classList.add('visible');
-                console.log('Admin mode enabled');
             }
         }
 
-        // Load votes from storage
-        async function loadVotes() {
-            try {
-                const result = await window.storage.get('user-votes');
-                if (result) {
-                    userVotes = JSON.parse(result.value);
-                }
-            } catch (error) {
-                console.log('No previous votes found');
-                userVotes = {};
+        function updateCounters() {
+            document.getElementById('individualCount').textContent = selectedIndividuals.length;
+            document.getElementById('couplesCount').textContent = selectedCouples.length;
+            
+            const individualCounter = document.getElementById('individualCounter');
+            const couplesCounter = document.getElementById('couplesCounter');
+            
+            if (selectedIndividuals.length === 3) {
+                individualCounter.classList.add('complete');
+            } else {
+                individualCounter.classList.remove('complete');
+            }
+            
+            if (selectedCouples.length === 3) {
+                couplesCounter.classList.add('complete');
+            } else {
+                couplesCounter.classList.remove('complete');
+            }
+            
+            const submitBtn = document.getElementById('submitBtn');
+            if (selectedIndividuals.length === 3 && selectedCouples.length === 3) {
+                submitBtn.classList.add('visible');
+            } else {
+                submitBtn.classList.remove('visible');
             }
         }
 
-        // Save votes to storage
-        async function saveVotes() {
-            try {
-                await window.storage.set('user-votes', JSON.stringify(userVotes));
-            } catch (error) {
-                console.error('Error saving votes:', error);
-            }
-        }
-
-        // Load vote counts from shared storage
-        async function loadVoteCounts() {
-            const voteCounts = {};
-            try {
-                const keys = await window.storage.list('vote-', true);
-                if (keys && keys.keys) {
-                    for (const key of keys.keys) {
-                        try {
-                            const result = await window.storage.get(key, true);
-                            if (result) {
-                                const costumeId = key.replace('vote-', '');
-                                voteCounts[costumeId] = parseInt(result.value) || 0;
-                            }
-                        } catch (e) {
-                            // Key doesn't exist yet
-                            continue;
-                        }
-                    }
-                }
-            } catch (error) {
-                console.log('Error loading vote counts:', error);
-            }
-            return voteCounts;
-        }
-
-        // Vote for a costume
-        async function vote(costumeId) {
-            if (userVotes[costumeId]) {
-                alert('You have already voted for this costume!');
+        function toggleVote(costumeId, type) {
+            if (hasVoted && !isAdmin) {
+                alert('You have already submitted your votes!');
                 return;
             }
 
-            try {
-                // Get current vote count
-                let currentVotes = 0;
-                try {
-                    const result = await window.storage.get('vote-' + costumeId, true);
-                    if (result) {
-                        currentVotes = parseInt(result.value) || 0;
+            if (type === 'individual') {
+                const index = selectedIndividuals.indexOf(costumeId);
+                if (index > -1) {
+                    selectedIndividuals.splice(index, 1);
+                } else {
+                    if (selectedIndividuals.length >= 3) {
+                        alert('You can only select 3 individual costumes!');
+                        return;
                     }
-                } catch (e) {
-                    // Key doesn't exist, start at 0
+                    selectedIndividuals.push(costumeId);
                 }
-
-                // Increment vote count
-                await window.storage.set('vote-' + costumeId, String(currentVotes + 1), true);
-
-                // Mark as voted by this user
-                userVotes[costumeId] = true;
-                await saveVotes();
-
-                // Refresh display
-                await displayCostumes();
-            } catch (error) {
-                console.error('Error voting:', error);
-                alert('Error submitting vote. Please try again.');
+            } else {
+                const index = selectedCouples.indexOf(costumeId);
+                if (index > -1) {
+                    selectedCouples.splice(index, 1);
+                } else {
+                    if (selectedCouples.length >= 3) {
+                        alert('You can only select 3 couples costumes!');
+                        return;
+                    }
+                    selectedCouples.push(costumeId);
+                }
             }
+            
+            displayCostumes();
+            updateCounters();
         }
 
-        // Load costumes from Google Sheet
+        async function submitVotes() {
+            if (selectedIndividuals.length !== 3 || selectedCouples.length !== 3) {
+                alert('Please select exactly 3 individual costumes and 3 couples costumes!');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+
+            // Record votes in localStorage to prevent multiple votes
+            localStorage.setItem('hasVotedHalloween2024', 'true');
+            localStorage.setItem('votedIndividuals', JSON.stringify(selectedIndividuals));
+            localStorage.setItem('votedCouples', JSON.stringify(selectedCouples));
+
+            // Here you could send votes to a server if needed
+            // For now, just show success message
+
+            document.getElementById('successMessage').classList.add('visible');
+            document.getElementById('costumeContainer').style.display = 'none';
+            document.querySelector('.voting-instructions').style.display = 'none';
+            submitBtn.style.display = 'none';
+
+            hasVoted = true;
+        }
+
         async function loadCostumes() {
             const container = document.getElementById('costumeContainer');
             container.innerHTML = '<div class="loading">Loading costume entries...</div>';
@@ -369,68 +476,87 @@
                 
                 if (data.entries && data.entries.length > 0) {
                     costumes = data.entries;
-                    await displayCostumes();
+                    displayCostumes();
                 } else {
                     container.innerHTML = '<div class="no-entries">No costume entries yet. Check back soon!</div>';
                 }
 
-                // Update last refresh time
                 document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
             } catch (error) {
                 console.error('Error loading costumes:', error);
-                container.innerHTML = '<div class="no-entries">Error loading entries. Please check your connection and try again.</div>';
+                container.innerHTML = '<div class="no-entries">Error loading entries. Please try again.</div>';
             }
         }
 
-        // Display costumes
-        async function displayCostumes() {
+        function displayCostumes() {
             const container = document.getElementById('costumeContainer');
-            const voteCounts = await loadVoteCounts();
 
             if (costumes.length === 0) {
                 container.innerHTML = '<div class="no-entries">No costume entries yet. Check back soon!</div>';
                 return;
             }
 
-            let html = '<div class="costume-grid">';
-            
-            costumes.forEach((costume, index) => {
-                const costumeId = `costume-${index}`;
-                const votes = voteCounts[costumeId] || 0;
-                const hasVoted = userVotes[costumeId];
+            const individualCostumes = costumes.filter(c => c.type === 'individual');
+            const couplesCostumes = costumes.filter(c => c.type === 'couples');
 
-                html += `
-                    <div class="costume-card">
-                        <div class="costume-type-badge">${costume.type === 'couples' ? 'Couples' : 'Individual'}</div>
-                        <div class="costume-name">${costume.costumeName}</div>
-                        <div class="participant-names">${costume.names}</div>
-                        <div class="costume-description">${costume.description}</div>
-                        <div class="vote-section">
-                            ${hasVoted 
-                                ? '<div class="voted-indicator">✓ Voted</div>' 
-                                : `<button class="vote-btn" onclick="vote('${costumeId}')">Vote</button>`
-                            }
-                            <div class="vote-count">${votes} ${votes === 1 ? 'vote' : 'votes'}</div>
+            let html = '';
+
+            if (individualCostumes.length > 0) {
+                html += '<div class="section-header"><h2>Individual Costumes</h2><p>Select 3 favorites</p></div>';
+                html += '<div class="costume-grid">';
+                
+                individualCostumes.forEach((costume, index) => {
+                    const costumeId = `individual-${index}`;
+                    const isSelected = selectedIndividuals.includes(costumeId);
+                    
+                    html += `
+                        <div class="costume-card ${isSelected ? 'selected' : ''}" onclick="toggleVote('${costumeId}', 'individual')">
+                            ${isSelected ? '<div class="selected-badge">✓ Selected</div>' : ''}
+                            <div class="costume-type-badge">Individual</div>
+                            <div class="costume-name">${costume.costumeName}</div>
+                            <div class="participant-names">${costume.names}</div>
+                            <div class="costume-description">${costume.description}</div>
                         </div>
-                    </div>
-                `;
-            });
+                    `;
+                });
+                
+                html += '</div>';
+            }
 
-            html += '</div>';
+            if (couplesCostumes.length > 0) {
+                html += '<div class="section-header"><h2>Couples Costumes</h2><p>Select 3 favorites</p></div>';
+                html += '<div class="costume-grid">';
+                
+                couplesCostumes.forEach((costume, index) => {
+                    const costumeId = `couples-${index}`;
+                    const isSelected = selectedCouples.includes(costumeId);
+                    
+                    html += `
+                        <div class="costume-card ${isSelected ? 'selected' : ''}" onclick="toggleVote('${costumeId}', 'couples')">
+                            ${isSelected ? '<div class="selected-badge">✓ Selected</div>' : ''}
+                            <div class="costume-type-badge">Couples</div>
+                            <div class="costume-name">${costume.costumeName}</div>
+                            <div class="participant-names">${costume.names}</div>
+                            <div class="costume-description">${costume.description}</div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+            }
+
             container.innerHTML = html;
         }
 
-        // Initialize
         async function init() {
             checkAdminMode();
-            await loadVotes();
-            await loadCostumes();
-            
-            // Auto-refresh every hour (3600000 ms)
-            setInterval(loadCostumes, 3600000);
+            checkIfVoted();
+            if (!hasVoted) {
+                await loadCostumes();
+                setInterval(loadCostumes, 3600000);
+            }
         }
 
-        // Start when page loads
         init();
     </script>
 </body>
