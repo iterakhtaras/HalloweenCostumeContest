@@ -100,7 +100,9 @@
 
   <script>
     // ====== CONFIG ======
+    // Entries (read)
     const SHEET_URL = 'https://script.google.com/macros/s/AKfycbyYX150VZOBm-Ic4X9t45creTHXDwTYBPW7qAztnyOBUUF9ZS50dxkxgeCgXWCBs9Ur/exec';
+    // Votes (write) — your latest deployment
     const VOTES_URL = 'https://script.google.com/macros/s/AKfycbzon5Eg1JiRK2PrdseJoytrZOgBaZj4pwCFQNgJKvzFEpkkYo-1g8WwrbbSWyxTje9q/exec';
     const ADMIN_PASSWORD = 'halloween2024';
 
@@ -247,20 +249,19 @@
       script.onerror = function(){
         clearTimeout(timeout);
         cleanup();
-        console.error('JSONP network error');
         alert('Network error submitting votes. Please try again.');
         submitBtn.disabled = false;
         submitBtn.textContent = 'Submit My Votes';
       };
 
       function cleanup(){
-        delete window[cbName];
-        if (script && script.parentNode){ script.parentNode.removeChild(script); }
+        try { delete window[cbName]; } catch(_) { window[cbName] = undefined; }
+        if (script && script.parentNode) script.parentNode.removeChild(script);
       }
 
       document.body.appendChild(script);
 
-      // Timeout safeguard
+      // timeout guard
       const timeout = setTimeout(function(){
         cleanup();
         alert('Timeout submitting votes. Please try again.');
