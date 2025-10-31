@@ -100,14 +100,14 @@
 
   <script>
     // ====== CONFIG ======
-    // Entries (read)
     const SHEET_URL = 'https://script.google.com/macros/s/AKfycbyYX150VZOBm-Ic4X9t45creTHXDwTYBPW7qAztnyOBUUF9ZS50dxkxgeCgXWCBs9Ur/exec';
-    // Votes (write) — your latest deployment
     const VOTES_URL = 'https://script.google.com/macros/s/AKfycbzon5Eg1JiRK2PrdseJoytrZOgBaZj4pwCFQNgJKvzFEpkkYo-1g8WwrbbSWyxTje9q/exec';
     const ADMIN_PASSWORD = 'halloween2024';
 
     // ====== STATE ======
     let costumes = [];
+    let shuffledIndividuals = [];
+    let shuffledCouples = [];
     let selectedIndividuals = [];
     let selectedCouples = [];
     let hasVoted = false;
@@ -115,6 +115,14 @@
     let voterId = null;
 
     // ====== HELPERS ======
+    function shuffle(arr){
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
     function getVoterId(){
       let id = localStorage.getItem('halloweenVoterId');
       if(!id){
@@ -223,7 +231,6 @@
         vote_3_couple: selectedCouples[2].name
       };
 
-      // Create a unique callback name
       const cbName = '__voteCb_' + Date.now() + '_' + Math.random().toString(36).slice(2,8);
       window[cbName] = function(result){
         clearTimeout(timeout);
@@ -261,7 +268,6 @@
 
       document.body.appendChild(script);
 
-      // timeout guard
       const timeout = setTimeout(function(){
         cleanup();
         alert('Timeout submitting votes. Please try again.');
@@ -270,7 +276,7 @@
       }, 12000);
     }
 
-    // ====== LOAD ENTRIES ======
+    // ====== LOAD ENTRIES (shuffle within sections once per load) ======
     async function loadCostumes(){
       const container = document.getElementById('costumeContainer');
       container.innerHTML = '<div class="loading">Loading costume entries...</div>';
@@ -280,11 +286,20 @@
         const data = await response.json();
 
         if (data.entries && data.entries.length > 0){
-          costumes = data.entries;
+          const individuals = data.entries.filter(c => c.type === 'individual');
+          const couples = data.entries.filter(c => c.type === 'couples');
+
+          shuffledIndividuals = shuffle(individuals.slice());
+          shuffledCouples = shuffle(couples.slice());
+
+          // keep a combined list just for reference if needed
+          costumes = [...shuffledIndividuals, ...shuffledCouples];
+
           displayCostumes();
         } else {
           container.innerHTML = '<div class="no-entries">No costume entries yet. Check back soon!</div>';
         }
+
         document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
       } catch (error){
         console.error('Error loading costumes:', error);
@@ -294,19 +309,17 @@
 
     function displayCostumes(){
       const container = document.getElementById('costumeContainer');
-      if (!costumes.length){
+
+      if (!shuffledIndividuals.length && !shuffledCouples.length){
         container.innerHTML = '<div class="no-entries">No costume entries yet. Check back soon!</div>';
         return;
       }
 
-      const individualCostumes = costumes.filter(c => c.type === 'individual');
-      const couplesCostumes    = costumes.filter(c => c.type === 'couples');
-
       let html = '';
 
-      if (individualCostumes.length){
+      if (shuffledIndividuals.length){
         html += '<div class="section-header"><h2>Individual Costumes</h2><p>Select 3 favorites</p></div><div class="costume-grid">';
-        individualCostumes.forEach((costume, i) => {
+        shuffledIndividuals.forEach((costume, i) => {
           const costumeId   = `individual-${i}`;
           const isSelected  = selectedIndividuals.some(v => v.id === costumeId);
           const costumeName = String(costume.costumeName || '').replace(/'/g,"\\'");
@@ -325,9 +338,9 @@
         html += '</div>';
       }
 
-      if (couplesCostumes.length){
+      if (shuffledCouples.length){
         html += '<div class="section-header"><h2>Couples Costumes</h2><p>Select 3 favorites</p></div><div class="costume-grid">';
-        couplesCostumes.forEach((costume, i) => {
+        shuffledCouples.forEach((costume, i) => {
           const costumeId   = `couples-${i}`;
           const isSelected  = selectedCouples.some(v => v.id === costumeId);
           const costumeName = String(costume.costumeName || '').replace(/'/g,"\\'");
